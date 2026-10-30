@@ -52,10 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const badgeClass = isLive ? "badge-live" : "badge-upcoming";
         const dotMarkup = isLive ? `<span class="status-dot"></span>` : "";
 
-        // Build absolute or relative URL
-        const fullShareUrl = window.location.origin
-          ? `${window.location.origin}${course.outlineUrl}`
-          : course.outlineUrl;
+        // Build share URL (fallback to Vercel live URL if opened locally via file://)
+        const fullShareUrl = (window.location.origin && window.location.protocol.startsWith("http"))
+          ? `${window.location.origin}/${course.outlineUrl.replace(/^\//, '')}`
+          : `https://courseoutlinescbd.vercel.app/${course.outlineUrl.replace(/^\//, '')}`;
 
         return `
         <article class="course-box" data-id="${course.id}" onclick="navigateToCourse('${course.outlineUrl}', event)" onkeydown="handleBoxKeyDown('${course.outlineUrl}', event)" role="link" tabindex="0" title="আউটলাইন দেখতে ক্লিক করুন">
