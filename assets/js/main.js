@@ -1,0 +1,149 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const gridElement = document.getElementById("coursesGrid");
+  const searchInput = document.getElementById("searchInput");
+  const filterPills = document.querySelectorAll(".pill-btn");
+  const resultsCount = document.getElementById("resultsCount");
+  const toast = document.getElementById("toast");
+
+  let activeCategory = "all";
+  let searchQuery = "";
+
+  function showToast(message) {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2800);
+  }
+
+  function renderCourses() {
+    if (!gridElement) return;
+
+    const filtered = COURSES.filter((course) => {
+      const matchCategory =
+        activeCategory === "all" || course.category === activeCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch =
+        !q ||
+        course.title.toLowerCase().includes(q) ||
+        course.description.toLowerCase().includes(q) ||
+        course.level.toLowerCase().includes(q) ||
+        course.tags.some((t) => t.toLowerCase().includes(q));
+
+      return matchCategory && matchSearch;
+    });
+
+    resultsCount.textContent = `${filtered.length}টি কোর্স আউটলাইন পাওয়া গেছে`;
+
+    if (filtered.length === 0) {
+      gridElement.innerHTML = `
+        <div style="grid-column: 1 / -1; padding: 48px 24px; text-align: center; background: rgba(13,34,53,0.4); border-radius: 12px; border: 1px dashed var(--line);">
+          <p style="font-size: 16px; color: var(--muted); margin-bottom: 12px;">কোনো কোর্স পাওয়া যায়নি।</p>
+          <button class="btn btn-outline btn-sm" onclick="resetFilters()">ফিল্টার রিসেট করুন</button>
+        </div>
+      `;
+      return;
+    }
+
+    gridElement.innerHTML = filtered
+      .map((course) => {
+        const isLive = course.badgeType === "live";
+        const badgeClass = isLive ? "badge-live" : "badge-upcoming";
+        const dotMarkup = isLive ? `<span class="status-dot"></span>` : "";
+
+        // Build absolute or relative URL
+        const fullShareUrl = window.location.origin
+          ? `${window.location.origin}${course.outlineUrl}`
+          : course.outlineUrl;
+
+        return `
+        <article class="course-card" data-id="${course.id}">
+          <div class="course-card-body">
+            <div class="card-top">
+              <span class="badge ${badgeClass}">
+                ${dotMarkup}
+                ${course.statusText}
+              </span>
+              <span class="level-tag">${course.level}</span>
+            </div>
+            
+            <h3 class="course-title">${course.title}</h3>
+            <p class="course-desc">${course.description}</p>
+            
+            <div class="course-meta">
+              <div class="meta-item">
+                <span>ক্লাস ও সময়</span>
+                <strong>${course.duration}</strong>
+              </div>
+              <div class="meta-item">
+                <span>সময়সূচী</span>
+                <strong>${course.schedule}</strong>
+              </div>
+            </div>
+
+            <div class="tags-wrap">
+              ${course.tags.map((t) => `<span class="tag-pill">#${t}</span>`).join("")}
+            </div>
+
+            <div class="card-actions">
+              <a href="${course.outlineUrl}" class="btn btn-teal">
+                আউটলাইন দেখুন
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </a>
+              <button type="button" class="btn btn-outline" onclick="copyCourseLink('${fullShareUrl}', '${course.title}')" title="Students-দের সাথে শেয়ার করতে লিংক কপি করুন">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                শেয়ার
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+      })
+      .join("");
+  }
+
+  window.copyCourseLink = (url, title) => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          showToast(`📋 "${title}"-এর লিংক কপি হয়েছে! Students-দের পাঠিয়ে দিন।`);
+        })
+        .catch(() => {
+          prompt("লিংকটি কপি করে শেয়ার করুন:", url);
+        });
+    } else {
+      prompt("লিংকটি কপি করে শেয়ার করুন:", url);
+    }
+  };
+
+  window.resetFilters = () => {
+    activeCategory = "all";
+    searchQuery = "";
+    if (searchInput) searchInput.value = "";
+    filterPills.forEach((p) =>
+      p.classList.toggle("active", p.dataset.category === "all")
+    );
+    renderCourses();
+  };
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value;
+      renderCourses();
+    });
+  }
+
+  filterPills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      filterPills.forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      activeCategory = pill.dataset.category;
+      renderCourses();
+    });
+  });
+
+  // Initial render
+  renderCourses();
+});
