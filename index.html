@@ -97,40 +97,55 @@
   <main class="courses-section">
     <div class="container">
       <div class="section-title-wrap">
-        <h2 class="section-title">উপলব্ধ কোর্স আউটলাইন</h2>
+        <div>
+          <h2 class="section-title">কোর্স আউটলাইন বক্সসমূহ</h2>
+          <p style="color:var(--muted);font-size:13.5px;margin-top:4px">👇 যেকোনো বক্সে ক্লিক করলেই সরাসরি বিস্তারিত কোর্স আউটলাইন দেখতে পাবেন</p>
+        </div>
         <span class="results-count" id="resultsCount">কোর্স লোড হচ্ছে…</span>
       </div>
 
       <div class="courses-grid" id="coursesGrid">
-        <!-- Dynamic Cards rendered via assets/js/main.js -->
+        <!-- Dynamic Boxes rendered via assets/js/main.js -->
         <noscript>
           <!-- Fallback without JS -->
-          <article class="course-card">
-            <div class="course-card-body">
-              <div class="card-top">
-                <span class="badge badge-live">লাইভ কোর্স</span>
-                <span class="level-tag">L1 Foundation</span>
+          <a href="/docs/l1/index.html" class="course-box" style="text-decoration:none">
+            <div class="box-glow-bar"></div>
+            <div class="course-box-body">
+              <div class="box-header">
+                <div class="box-badge-wrap">
+                  <span class="badge badge-live"><span class="status-dot"></span>১০০% ফ্রি · লাইভ ক্লাস</span>
+                  <span class="level-tag">L1 Foundation</span>
+                </div>
               </div>
               <h3 class="course-title">SOC Analyst L1 Live Course</h3>
               <p class="course-desc">১২টি লাইভ ক্লাসে একটি সম্পূর্ণ alert handling journey—Monitoring থেকে Escalation।</p>
-              <div class="card-actions">
-                <a href="/docs/l1/index.html" class="btn btn-teal">আউটলাইন দেখুন</a>
+              <div class="box-footer">
+                <div class="click-prompt">
+                  <span>সম্পূর্ণ আউটলাইন দেখুন</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </div>
               </div>
             </div>
-          </article>
-          <article class="course-card">
-            <div class="course-card-body">
-              <div class="card-top">
-                <span class="badge badge-upcoming">পরবর্তী ব্যাচ</span>
-                <span class="level-tag">L2 Advanced</span>
+          </a>
+          <a href="/docs/l2/index.html" class="course-box" style="text-decoration:none">
+            <div class="box-glow-bar"></div>
+            <div class="course-box-body">
+              <div class="box-header">
+                <div class="box-badge-wrap">
+                  <span class="badge badge-upcoming">পরবর্তী ব্যাচ আসছে</span>
+                  <span class="level-tag">L2 Advanced</span>
+                </div>
               </div>
               <h3 class="course-title">Advanced SOC Analyst L2</h3>
               <p class="course-desc">Escalated Alerts, Threat Hunting, Sigma Rules ও Root Cause Analysis।</p>
-              <div class="card-actions">
-                <a href="/docs/l2/index.html" class="btn btn-teal">আউটলাইন দেখুন</a>
+              <div class="box-footer">
+                <div class="click-prompt">
+                  <span>সম্পূর্ণ আউটলাইন দেখুন</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </div>
               </div>
             </div>
-          </article>
+          </a>
         </noscript>
       </div>
     </div>

@@ -58,14 +58,20 @@ document.addEventListener("DOMContentLoaded", () => {
           : course.outlineUrl;
 
         return `
-        <article class="course-card" data-id="${course.id}">
-          <div class="course-card-body">
-            <div class="card-top">
-              <span class="badge ${badgeClass}">
-                ${dotMarkup}
-                ${course.statusText}
-              </span>
-              <span class="level-tag">${course.level}</span>
+        <article class="course-box" data-id="${course.id}" onclick="navigateToCourse('${course.outlineUrl}', event)" onkeydown="handleBoxKeyDown('${course.outlineUrl}', event)" role="link" tabindex="0" title="আউটলাইন দেখতে ক্লিক করুন">
+          <div class="box-glow-bar"></div>
+          <div class="course-box-body">
+            <div class="box-header">
+              <div class="box-icon-wrap" aria-hidden="true">
+                ${course.icon || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`}
+              </div>
+              <div class="box-badge-wrap">
+                <span class="badge ${badgeClass}">
+                  ${dotMarkup}
+                  ${course.statusText}
+                </span>
+                <span class="level-tag">${course.level}</span>
+              </div>
             </div>
             
             <h3 class="course-title">${course.title}</h3>
@@ -86,14 +92,14 @@ document.addEventListener("DOMContentLoaded", () => {
               ${course.tags.map((t) => `<span class="tag-pill">#${t}</span>`).join("")}
             </div>
 
-            <div class="card-actions">
-              <a href="${course.outlineUrl}" class="btn btn-teal">
-                আউটলাইন দেখুন
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-              </a>
-              <button type="button" class="btn btn-outline" onclick="copyCourseLink('${fullShareUrl}', '${course.title}')" title="Students-দের সাথে শেয়ার করতে লিংক কপি করুন">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
-                শেয়ার
+            <div class="box-footer">
+              <div class="click-prompt">
+                <span>সম্পূর্ণ আউটলাইন দেখুন</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </div>
+              <button type="button" class="btn-share-icon" onclick="copyCourseLink('${fullShareUrl}', '${course.title}', event)" title="Students-দের সাথে শেয়ার করতে লিংক কপি করুন">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                <span>শেয়ার</span>
               </button>
             </div>
           </div>
@@ -103,12 +109,30 @@ document.addEventListener("DOMContentLoaded", () => {
       .join("");
   }
 
-  window.copyCourseLink = (url, title) => {
+  window.navigateToCourse = (url, event) => {
+    // If user clicked the share button or a link inside, don't navigate
+    if (event && (event.target.closest(".btn-share-icon") || event.target.closest("button"))) {
+      return;
+    }
+    window.location.href = url;
+  };
+
+  window.handleBoxKeyDown = (url, event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      window.location.href = url;
+    }
+  };
+
+  window.copyCourseLink = (url, title, event) => {
+    if (event) {
+      event.stopPropagation();
+    }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard
         .writeText(url)
         .then(() => {
-          showToast(`📋 "${title}"-এর লিংক কপি হয়েছে! Students-দের পাঠিয়ে দিন।`);
+          showToast(`📋 "${title}"-এর আউটলাইন লিংক কপি হয়েছে!`);
         })
         .catch(() => {
           prompt("লিংকটি কপি করে শেয়ার করুন:", url);
